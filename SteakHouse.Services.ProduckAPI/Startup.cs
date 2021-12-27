@@ -1,3 +1,4 @@
+using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -9,6 +10,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using SteakHouse.Services.ProduckAPI.DBContext;
+using SteakHouse.Services.ProduckAPI.Helper;
+using SteakHouse.Services.ProduckAPI.Repository;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,6 +32,11 @@ namespace SteakHouse.Services.ProduckAPI
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<ApplicationDbContext>(options =>options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            IMapper mapper = MappingConfig.RegisterMaps().CreateMapper();
+            services.AddSingleton(mapper);
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+            services.AddScoped<IProductRepository, ProductRepository>();
+
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
